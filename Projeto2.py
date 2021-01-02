@@ -118,6 +118,21 @@ def obter_posicoes_adjacentes(p):
 	if posicoes_iguais(p, cria_posicao('c', '3')):
 		return (cria_posicao('b', '2'), cria_posicao('c', '2'), cria_posicao('b', '3'))
 
+def posicao_para_inteiro(p):
+	'''
+	Recebe uma posicao e transforma a mesma em inteiro (1 a 9).
+
+	INPUT: posicao    OUTPUT: inteiro (1 a 9)
+	'''
+	c = obter_pos_c(p)
+	l = obter_pos_l(p)
+
+	if c == 'a': return (int(l) - 1) * 3 + 1
+
+	if c == 'b': return (int(l) - 1) * 3 + 2
+
+	if c == 'c': return (int(l) - 1) * 3 + 3
+
 '''********************************************************************************************************************************'''
 
 # TAD PECA (2.1.2)
@@ -226,16 +241,7 @@ def obter_peca(t, p):
 	INPUT: tabuleiro, posicao    OUTPUT: peca
 	'''
 
-	c = obter_pos_c(p)
-	l = obter_pos_l(p)
-
-	if c == 'a': pos = (int(l) - 1) * 3 + 1
-
-	if c == 'b': pos = (int(l) - 1) * 3 + 2
-
-	if c == 'c': pos = (int(l) - 1) * 3 + 3
-
-	return t[pos-1]
+	return t[posicao_para_inteiro(p)-1]
 
 def obter_vetor(t, s):
 	'''
@@ -265,17 +271,8 @@ def coloca_peca(t, j, p):
 
 	INPUT: tabuleiro, peca, posicao    OUTPUT: tabuleiro (modificado)
 	'''
-	
-	c = obter_pos_c(p)
-	l = obter_pos_l(p)
 
-	if c == 'a': pos = (int(l) - 1) * 3 + 1
-
-	if c == 'b': pos = (int(l) - 1) * 3 + 2
-
-	if c == 'c': pos = (int(l) - 1) * 3 + 3
-
-	t[pos-1] = j
+	t[posicao_para_inteiro(p)-1] = j
 
 	return t
 
@@ -287,16 +284,7 @@ def remove_peca(t, p):
 	INPUT: tabuleiro, posicao    OUTPUT: tabuleiro (modificado)
 	'''
 
-	c = obter_pos_c(p)
-	l = obter_pos_l(p)
-
-	if c == 'a': pos = (int(l) - 1) * 3 + 1
-
-	if c == 'b': pos = (int(l) - 1) * 3 + 2
-
-	if c == 'c': pos = (int(l) - 1) * 3 + 3
-
-	t[pos-1] = cria_peca(' ')
+	t[posicao_para_inteiro(p)-1] = cria_peca(' ')
 		
 	return t
 
@@ -341,17 +329,8 @@ def eh_posicao_livre(t, p):
 
 	INPUT: tabuleiro, posicao    OUTPUT: booleano
 	'''
-	
-	c = obter_pos_c(p)
-	l = obter_pos_l(p)
 
-	if c == 'a': pos = (int(l) - 1) * 3 + 1
-
-	if c == 'b': pos = (int(l) - 1) * 3 + 2
-
-	if c == 'c': pos = (int(l) - 1) * 3 + 3
-
-	return t[pos-1] == cria_peca(' ')
+	return t[posicao_para_inteiro(p)-1] == cria_peca(' ')
 
 # - Teste
 def tabuleiros_iguais(t1, t2):
@@ -784,5 +763,3 @@ def moinho(str1, str2): # 2.2.3
 			return peca_para_str(botPeca)
 
 		vezJogador = not vezJogador
-
-print(moinho('[X]', 'dificil'))
