@@ -553,7 +553,7 @@ def obter_movimento_auto(t, j, estg): # 2.2.2
 			
 		elif estg == 'dificil': return estg_dificil(t, j)			
 
-def minimax(t, j, j_ganhador, depth, seq_movimentos):
+def minimax(t, j, depth, seq_movimentos):
 	'''
 	FUNCAO RECURSIVA MINIMAX
 	Recebe um tabuleiro, uma peca, uma peca ganhadora (mesma peca que a do computador), a profundidade e uma seq
@@ -565,25 +565,20 @@ def minimax(t, j, j_ganhador, depth, seq_movimentos):
 	'''
 
 	if not pecas_iguais(obter_ganhador(t), cria_peca(' ')) or depth == 0:
-		return cria_copia_tabuleiro(t), seq_movimentos
+		return peca_para_inteiro(obter_ganhador(t)), seq_movimentos
 	if pecas_iguais(j, cria_peca('O')):
 		outro_jogador = cria_peca('X')
 	else:
 		outro_jogador = cria_peca('O')
-	if pecas_iguais(j_ganhador, cria_peca('O')):
-		j_perdedor = cria_peca('X')
-	else:
-		j_perdedor = cria_peca('O')
-	melhor_sequencia_movimentos = ()
-	melhor_resultado = pecas_iguais(obter_ganhador(t), outro_jogador)
+	melhor_sequencia_movimentos = None
+	melhor_resultado = peca_para_inteiro(outro_jogador)
 	for posJogador in obter_posicoes_jogador(t, j):
 		for posAdjacente in obter_posicoes_adjacentes(posJogador):
 			if eh_posicao_livre(t, posAdjacente):
 				novo_tabuleiro = cria_copia_tabuleiro(t)
-				novo_tabuleiro = move_peca(novo_tabuleiro, posJogador, posAdjacente)
-				novo_resultado, nova_seq_movimentos = minimax(novo_tabuleiro, outro_jogador, j_ganhador, depth - 1, seq_movimentos + ((posJogador, posAdjacente),))
-				if len(melhor_sequencia_movimentos) == 0 or (pecas_iguais(j, j_ganhador) and pecas_iguais(obter_ganhador(novo_tabuleiro), j)) \
-					or ((pecas_iguais(j, j_perdedor) and not pecas_iguais(obter_ganhador(novo_tabuleiro), j))):
+				move_peca(novo_tabuleiro, posJogador, posAdjacente)
+				novo_resultado, nova_seq_movimentos = minimax(novo_tabuleiro, outro_jogador, depth - 1, seq_movimentos + (posJogador, posAdjacente))
+				if melhor_sequencia_movimentos == None or (pecas_iguais(j, cria_peca('X')) and novo_resultado > melhor_resultado) or (pecas_iguais(j, cria_peca('O')) and novo_resultado < melhor_resultado):
 					melhor_resultado, melhor_sequencia_movimentos = novo_resultado, nova_seq_movimentos
 	return melhor_resultado, melhor_sequencia_movimentos
 
@@ -608,10 +603,8 @@ def estg_normal(t, j):
 	INPUT: tabuleiro, peca    OUTPUT: movimento (tuplo)
 	'''
 
-	melhor_resultado, melhor_sequencia_movimentos = minimax(t, j, j, 1, ())
-	if len(melhor_sequencia_movimentos) == 0:
-		return estg_facil(t, j)
-	return melhor_sequencia_movimentos[0]
+	melhor_resultado, melhor_sequencia_movimentos = minimax(t, j, 1, ())
+	return melhor_sequencia_movimentos[0], melhor_sequencia_movimentos[1]
 
 def estg_dificil(t, j):
 	'''
@@ -621,8 +614,8 @@ def estg_dificil(t, j):
 	INPUT: tabuleiro, peca    OUTPUT: movimento (tuplo)
 	'''
 
-	melhor_resultado, melhor_sequencia_movimentos = minimax(t, j, j, 5, ())
-	return melhor_sequencia_movimentos[0]
+	melhor_resultado, melhor_sequencia_movimentos = minimax(t, j, 5, ())
+	return melhor_sequencia_movimentos[0], melhor_sequencia_movimentos[1]
 
 def crit_1(t, j):
 	'''
@@ -791,3 +784,5 @@ def moinho(str1, str2): # 2.2.3
 			return peca_para_str(botPeca)
 
 		vezJogador = not vezJogador
+
+print(moinho('[X]', 'dificil'))
